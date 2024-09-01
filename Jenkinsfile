@@ -8,26 +8,31 @@ pipeline {
     environment {
         ALLURE_RESULTS_DIR = 'target/allure-results'
         ALLURE_REPORT_DIR = 'target/allure-report'
+        GITHUB_REPO_URL = 'https://github.com/YarOzers/selenide-tests'
+        GIT_CREDENTIALS_ID = 'jenkins-git-token' // Replace with your Jenkins credentials ID
+    }
+
+    tools {
+        maven 'Maven 3.x' // Ensure Maven is configured in Jenkins Global Tool Configuration
+        git 'Default' // Ensure Git is installed and configured
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Клонирование репозитория из SCM
-                checkout scm
+                checkout([$class: 'GitSCM',
+                          branches: [[name: '*/main']], // Update as per your branch
+                          userRemoteConfigs: [[url: "${GITHUB_REPO_URL}", credentialsId: "${GIT_CREDENTIALS_ID}"]]
+                ])
             }
         }
 
         stage('Run Tests') {
             steps {
                 script {
-                    // Извлекаем переданные TEST_IDS и обрабатываем их
                     def testIds = params.TEST_IDS
                     echo "Running tests with IDs: ${testIds}"
-
-                    // Проверка, если тестовые ID указаны
                     if (testIds?.trim()) {
-                        // Запуск Maven с параметром -Dgroups для выполнения тестов с указанными ID
                         sh "mvn clean test -Dgroups=${testIds}"
                     } else {
                         echo "No test IDs provided, running all tests."
@@ -40,7 +45,6 @@ pipeline {
         stage('Generate Allure Report') {
             steps {
                 script {
-                    // Генерация Allure отчета
                     echo 'Generating Allure report...'
                     sh 'mvn allure:report'
                 }
@@ -50,7 +54,6 @@ pipeline {
         stage('Publish Allure Report') {
             steps {
                 script {
-                    // Публикация Allure отчета
                     allure([
                         includeProperties: false,
                         jdk: '',
@@ -64,9 +67,7 @@ pipeline {
 
     post {
         always {
-            // Архивация JUnit отчетов
             junit '**/target/surefire-reports/*.xml'
-            // Архивация Allure отчетов
             archiveArtifacts artifacts: "${ALLURE_RESULTS_DIR}/**", allowEmptyArchive: true
         }
 

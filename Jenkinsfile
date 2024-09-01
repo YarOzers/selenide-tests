@@ -13,7 +13,7 @@ pipeline {
     }
 
     tools {
-        maven 'Maven 3.x' // Ensure Maven is configured in Jenkins Global Tool Configuration
+        maven 'Maven 3.9.9' // Ensure Maven is configured in Jenkins Global Tool Configuration
         git 'Default' // Ensure Git is installed and configured
     }
 

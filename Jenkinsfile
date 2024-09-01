@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven 3.9.9' // Имя настройки Maven, указанное в Global Tool Configuration Jenkins
+        maven '3.9.9' // Имя настройки Maven, указанное в Global Tool Configuration Jenkins
     }
 
     parameters {

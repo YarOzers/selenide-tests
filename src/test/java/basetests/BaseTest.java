@@ -1,4 +1,10 @@
-package org.example.basetests;
+package basetests;
+
+import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.logevents.SelenideLogger;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import io.qameta.allure.selenide.AllureSelenide;
+import org.junit.jupiter.api.BeforeAll;
 
 public class BaseTest {
 
@@ -7,7 +13,12 @@ public class BaseTest {
         // Настройка WebDriver
         WebDriverManager.chromedriver().setup();
         Configuration.browser = "chrome";
-        Configuration.startMaximized = true; // Открывать браузер в полноэкранном режиме
+//        Configuration.startMaximized = true; // Открывать браузер в полноэкранном режиме
         Configuration.timeout = 10000; // Таймаут ожидания (мс)
+
+        // Добавление Allure Selenide Listener
+        SelenideLogger.addListener("AllureSelenide", new AllureSelenide()
+                .screenshots(true)
+                .savePageSource(true));
     }
 }

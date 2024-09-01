@@ -34,7 +34,7 @@ pipeline {
                     def testIds = params.TEST_IDS ? "-Dgroups=${params.TEST_IDS}" : ""
                     echo "Running tests with options: ${testIds}"
                     // Запуск Selenide тестов через Selenoid
-                    sh "mvn clean test ${testIds} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true"
+                    sh "mvn test -Dgroups=${testIds} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true"
                 }
             }
         }

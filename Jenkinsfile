@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven 3.9.9' // Имя настройки Maven, указанное в Global Tool Configuration Jenkins
+    }
+
     parameters {
         string(name: 'TEST_IDS', defaultValue: '', description: 'Comma-separated list of test IDs to run')
     }

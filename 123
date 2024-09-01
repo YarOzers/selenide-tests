@@ -14,7 +14,7 @@ pipeline {
         ALLURE_REPORT_DIR = 'target/allure-report'
         GITHUB_REPO_URL = 'https://github.com/YarOzers/selenide-tests' // HTTPS URL репозитория
         GIT_CREDENTIALS_ID = 'jenkins-git-token' // ID, который вы назначили в Jenkins для токена
-        SELENOID_URL = 'http://localhost:8081/wd/hub'
+        SELENOID_URL = 'http://localhost:4444/wd/hub'
     }
 
     stages {
@@ -31,8 +31,8 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    def testIds = params.TEST_IDS ? "-Dgroups=${params.TEST_IDS}" : ""
-                    echo "Running tests with options: ${testIds}"
+                    def testIds = params.TEST_IDS ? params.TEST_IDS : ""
+                    echo "Running tests with groups: ${testIds}"
                     // Запуск Selenide тестов через Selenoid
                     sh "mvn test -Dgroups=${testIds} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true"
                 }

@@ -8,20 +8,16 @@ pipeline {
     environment {
         ALLURE_RESULTS_DIR = 'target/allure-results'
         ALLURE_REPORT_DIR = 'target/allure-report'
-        GITHUB_REPO_URL = 'https://github.com/YarOzers/selenide-tests'
-        GIT_CREDENTIALS_ID = 'jenkins-git-token' // Replace with your Jenkins credentials ID
-    }
-
-    tools {
-        maven '3.9.9' // Ensure Maven is configured in Jenkins Global Tool Configuration
-        git 'Default' // Ensure Git is installed and configured
+        GITHUB_REPO_URL = 'git@github.com:your-username/your-repo.git' // замените на реальный URL
+        GIT_CREDENTIALS_ID = 'jenkins-git-token' // или 'jenkins-git-token', в зависимости от настроек
+        SELENOID_URL = 'http://localhost:4444/wd/hub'
     }
 
     stages {
         stage('Checkout') {
             steps {
                 checkout([$class: 'GitSCM',
-                          branches: [[name: '*/main']], // Update as per your branch
+                          branches: [[name: '*/main']], // или другая ветка
                           userRemoteConfigs: [[url: "${GITHUB_REPO_URL}", credentialsId: "${GIT_CREDENTIALS_ID}"]]
                 ])
             }
@@ -30,14 +26,10 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    def testIds = params.TEST_IDS
-                    echo "Running tests with IDs: ${testIds}"
-                    if (testIds?.trim()) {
-                        sh "mvn clean test -Dgroups=${testIds}"
-                    } else {
-                        echo "No test IDs provided, running all tests."
-                        sh "mvn clean test"
-                    }
+                    def testIds = params.TEST_IDS ? "-Dgroups=${params.TEST_IDS}" : ""
+                    echo "Running tests with options: ${testIds}"
+                    // Запуск Selenide тестов через Selenoid
+                    sh "mvn clean test ${testIds} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true"
                 }
             }
         }
@@ -45,22 +37,15 @@ pipeline {
         stage('Generate Allure Report') {
             steps {
                 script {
-                    echo 'Generating Allure report...'
-                    sh 'mvn allure:report'
+                    // Генерация отчета Allure
+                    sh "allure generate ${ALLURE_RESULTS_DIR} -o ${ALLURE_REPORT_DIR} || true"
                 }
             }
         }
 
         stage('Publish Allure Report') {
             steps {
-                script {
-                    allure([
-                        includeProperties: false,
-                        jdk: '',
-                        reportBuildPolicy: 'ALWAYS',
-                        results: [[path: "${ALLURE_RESULTS_DIR}"]]
-                    ])
-                }
+                allure includeProperties: false, jdk: '', results: [[path: "${ALLURE_RESULTS_DIR}"]]
             }
         }
     }
@@ -68,15 +53,10 @@ pipeline {
     post {
         always {
             junit '**/target/surefire-reports/*.xml'
-            archiveArtifacts artifacts: "${ALLURE_RESULTS_DIR}/**", allowEmptyArchive: true
+            archiveArtifacts artifacts: '**/target/surefire-reports/*.xml', allowEmptyArchive: true
         }
-
-        success {
-            echo 'Build completed successfully!'
-        }
-
         failure {
-            echo 'Build failed!'
+            echo "Build failed!"
         }
     }
 }

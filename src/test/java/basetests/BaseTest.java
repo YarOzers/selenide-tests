@@ -12,7 +12,11 @@ public class BaseTest {
     public static void setUp() {
         // Настройка WebDriver
         WebDriverManager.chromedriver().setup();
+//        WebDriverManager.chromedriver().driverVersion("127.0.6533.400").setup();
         Configuration.browser = "chrome";
+        Configuration.remote = "http://localhost:4444/wd/hub";
+        Configuration.browserCapabilities.setCapability("enableVNC", true);  // Включение VNC (по желанию)
+        Configuration.browserCapabilities.setCapability("enableVideo", false);  // Включение записи видео (по желанию)
 //        Configuration.startMaximized = true; // Открывать браузер в полноэкранном режиме
         Configuration.timeout = 10000; // Таймаут ожидания (мс)
 

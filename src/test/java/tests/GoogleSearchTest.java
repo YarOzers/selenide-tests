@@ -1,33 +1,33 @@
 package tests;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import basetests.BaseTest;
-import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.jupiter.api.*;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import com.codeborne.selenide.Selenide;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
+import static com.codeborne.selenide.Selenide.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GoogleSearchTest extends BaseTest {
 
-    WebDriver driver;
-
     @BeforeEach
     void setupTest() {
-        driver = new ChromeDriver();
     }
 
     @AfterEach
     void teardown() {
-        driver.quit();
+        Selenide.closeWebDriver();
     }
 
     @Test
     @Tag("1")
     void test1() {
         // Exercise
-        driver.get("https://bonigarcia.dev/selenium-webdriver-java/");
-        String title = driver.getTitle();
+        open("https://bonigarcia.dev/selenium-webdriver-java/");
+        String title = title();
 
         // Verify
         assertThat(title).contains("Selenium WebDriver");
@@ -37,8 +37,8 @@ public class GoogleSearchTest extends BaseTest {
     @Tag("5")
     void test5() {
         // Exercise
-        driver.get("https://bonigarcia.dev/selenium-webdriver-java/");
-        String title = driver.getTitle();
+        open("https://bonigarcia.dev/selenium-webdriver-java/");
+        String title = title();
 
         // Verify
         assertThat(title).contains("Selenium WebDriver");
@@ -48,8 +48,8 @@ public class GoogleSearchTest extends BaseTest {
     @Tag("8")
     void test8() {
         // Exercise
-        driver.get("https://bonigarcia.dev/selenium-webdriver-java/");
-        String title = driver.getTitle();
+        open("https://bonigarcia.dev/selenium-webdriver-java/");
+        String title = title();
 
         // Verify
         assertThat(title).contains("Selenium WebDriver");

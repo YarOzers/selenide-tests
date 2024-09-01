@@ -14,7 +14,7 @@ pipeline {
         ALLURE_REPORT_DIR = 'target/allure-report'
         GITHUB_REPO_URL = 'https://github.com/YarOzers/selenide-tests' // HTTPS URL репозитория
         GIT_CREDENTIALS_ID = 'jenkins-git-token' // ID, который вы назначили в Jenkins для токена
-        SELENOID_URL = 'http://localhost:4444/wd/hub'
+        SELENOID_URL = 'http://188.235.130.37:4444/wd/hub'
     }
 
     stages {

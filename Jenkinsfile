@@ -8,16 +8,17 @@ pipeline {
     environment {
         ALLURE_RESULTS_DIR = 'target/allure-results'
         ALLURE_REPORT_DIR = 'target/allure-report'
-        GITHUB_REPO_URL = 'git@github.com:your-username/your-repo.git' // замените на реальный URL
-        GIT_CREDENTIALS_ID = 'jenkins-git-token' // или 'jenkins-git-token', в зависимости от настроек
+        GITHUB_REPO_URL = 'https://github.com/your-username/your-repo.git' // HTTPS URL репозитория
+        GIT_CREDENTIALS_ID = 'jenkins-git-token' // ID, который вы назначили в Jenkins для токена
         SELENOID_URL = 'http://localhost:4444/wd/hub'
     }
 
     stages {
         stage('Checkout') {
             steps {
+                // Используем токен для аутентификации
                 checkout([$class: 'GitSCM',
-                          branches: [[name: '*/main']], // или другая ветка
+                          branches: [[name: '*/main']],
                           userRemoteConfigs: [[url: "${GITHUB_REPO_URL}", credentialsId: "${GIT_CREDENTIALS_ID}"]]
                 ])
             }

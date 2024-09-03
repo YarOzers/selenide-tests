@@ -83,7 +83,7 @@ pipeline {
             script {
                 def reportFiles = sh(script: 'find target/surefire-reports -name "TEST-*.xml"', returnStdout: true).trim()
                 if (reportFiles) {
-                    def result = sh(script: "cat ${reportFiles}", returnStdout: true)
+                    def result = sh(script: "cat '${reportFiles}'", returnStdout: true) // экранирование переменной
                     httpRequest httpMode: 'POST',
                                 url: 'http://188.235.130.37:9111/api/test-results',
                                 requestBody: result,

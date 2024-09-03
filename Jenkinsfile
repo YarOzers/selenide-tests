@@ -60,8 +60,19 @@ pipeline {
             junit '**/target/surefire-reports/*.xml'
             archiveArtifacts artifacts: '**/target/surefire-reports/*.xml', allowEmptyArchive: true
         }
+        success {
+            script {
+                def result = sh(script: 'cat target/surefire-reports/TEST-TestSuite.xml', returnStdout: true)
+                httpRequest httpMode: 'POST',
+                            url: 'http://188.235.130.37:9111/api/test-results',
+                            requestBody: result,
+                            contentType: 'APPLICATION_XML'
+            }
+        }
         failure {
             echo "Build failed!"
         }
     }
+
+
 }

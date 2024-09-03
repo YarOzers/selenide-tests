@@ -64,22 +64,23 @@ pipeline {
                 }
             }
         }
+    }
 
-        post ('Sent Allure reports') {
-            success {
-                script {
-                    if (fileExists('target/surefire-reports/TEST-TestSuite.xml')) {
-                        def result = sh(script: 'cat target/surefire-reports/TEST-TestSuite.xml', returnStdout: true)
-                        httpRequest httpMode: 'POST',
-                                    url: 'http://188.235.130.37:9111/api/test-results',
-                                    requestBody: result,
-                                    contentType: 'APPLICATION_XML'
-                    } else {
-                        echo "Test report not found, skipping HTTP request."
-                    }
+    post {
+        success {
+            script {
+                if (fileExists('target/surefire-reports/TEST-TestSuite.xml')) {
+                    def result = sh(script: 'cat target/surefire-reports/TEST-TestSuite.xml', returnStdout: true)
+                    httpRequest httpMode: 'POST',
+                                url: 'http://188.235.130.37:9111/api/test-results',
+                                requestBody: result,
+                                contentType: 'APPLICATION_XML'
+                } else {
+                    echo "Test report not found, skipping HTTP request."
                 }
             }
         }
+
         failure {
             echo "Build failed!"
         }

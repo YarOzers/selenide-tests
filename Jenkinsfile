@@ -65,7 +65,7 @@ pipeline {
             }
         }
 
-        post {
+        post ('Sent Allure reports') {
             success {
                 script {
                     if (fileExists('target/surefire-reports/TEST-TestSuite.xml')) {

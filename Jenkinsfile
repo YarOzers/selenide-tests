@@ -35,7 +35,7 @@ pipeline {
                     def testIds = params.TEST_IDS ? "-Dgroups=${params.TEST_IDS}" : ""
                     echo "Running tests with options: ${testIds}"
                     // Запуск Selenide тестов через Selenoid
-                    sh "mvn test -Dgroups=${testIds} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true"
+                    sh "mvn test -Dgroups=${testIds} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true -Dallure.results.directory=target/allure-results"
                 }
             }
         }
@@ -61,6 +61,17 @@ pipeline {
                     } else {
                         echo "Allure report directory does not exist. Skipping report publication."
                     }
+                }
+            }
+        }
+        
+        stage('Debug Directories') {
+            steps {
+                script {
+                    sh 'echo "Listing target directory contents:"'
+                    sh 'ls -la target'
+                    sh 'echo "Listing allure-results directory contents:"'
+                    sh 'ls -la target/allure-results'
                 }
             }
         }

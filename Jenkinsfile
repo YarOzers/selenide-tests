@@ -3,6 +3,7 @@ pipeline {
 
     tools {
         maven 'Maven' // Имя настройки Maven, указанное в Global Tool Configuration Jenkins
+        allure 'Allure'  //Имя настройки Allure
     }
 
     parameters {
@@ -42,31 +43,41 @@ pipeline {
         stage('Generate Allure Report') {
             steps {
                 script {
-                    // Генерация отчета Allure
-                    sh "allure generate ${ALLURE_RESULTS_DIR} -o ${ALLURE_REPORT_DIR} || true"
+                    // Проверка существования директории с результатами тестов перед генерацией отчета
+                    if (fileExists("${ALLURE_RESULTS_DIR}")) {
+                        sh "allure generate ${ALLURE_RESULTS_DIR} -o ${ALLURE_REPORT_DIR} || true"
+                    } else {
+                        echo "Allure results directory does not exist. Skipping report generation."
+                    }
                 }
             }
         }
 
         stage('Publish Allure Report') {
             steps {
-                allure includeProperties: false, jdk: '', results: [[path: "${ALLURE_RESULTS_DIR}"]]
+                script {
+                    if (fileExists("${ALLURE_REPORT_DIR}")) {
+                        allure includeProperties: false, jdk: '', results: [[path: "${ALLURE_RESULTS_DIR}"]]
+                    } else {
+                        echo "Allure report directory does not exist. Skipping report publication."
+                    }
+                }
             }
         }
-    }
 
-    post {
-        always {
-            junit '**/target/surefire-reports/*.xml'
-            archiveArtifacts artifacts: '**/target/surefire-reports/*.xml', allowEmptyArchive: true
-        }
-        success {
-            script {
-                def result = sh(script: 'cat target/surefire-reports/TEST-TestSuite.xml', returnStdout: true)
-                httpRequest httpMode: 'POST',
-                            url: 'http://188.235.130.37:9111/api/test-results',
-                            requestBody: result,
-                            contentType: 'APPLICATION_XML'
+        post {
+            success {
+                script {
+                    if (fileExists('target/surefire-reports/TEST-TestSuite.xml')) {
+                        def result = sh(script: 'cat target/surefire-reports/TEST-TestSuite.xml', returnStdout: true)
+                        httpRequest httpMode: 'POST',
+                                    url: 'http://188.235.130.37:9111/api/test-results',
+                                    requestBody: result,
+                                    contentType: 'APPLICATION_XML'
+                    } else {
+                        echo "Test report not found, skipping HTTP request."
+                    }
+                }
             }
         }
         failure {

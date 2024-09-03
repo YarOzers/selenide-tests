@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         maven 'Maven' // Имя настройки Maven, указанное в Global Tool Configuration Jenkins
-        allure 'Allure'  //Имя настройки Allure
+        allure 'Allure'  // Имя настройки Allure
     }
 
     parameters {
@@ -85,6 +85,4 @@ pipeline {
             echo "Build failed!"
         }
     }
-
-
 }

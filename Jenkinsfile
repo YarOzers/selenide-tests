@@ -8,9 +8,9 @@ pipeline {
 
     parameters {
         string(name: 'TEST_IDS', defaultValue: '', description: 'Comma-separated list of test IDs to run')
-        string(name: 'USER_ID', defaultValue: '', description: 'User id')
-        string(name: 'TEST_PLAN_ID', defaultValue: '', description: 'Test plan id')
-        string(name: 'TEST_RUN_ID', defaultValue: '', description: 'Test run uuid')
+        string(name: 'USER_ID', defaultValue: '111', description: 'User id')
+        string(name: 'TEST_PLAN_ID', defaultValue: '222', description: 'Test plan id')
+        string(name: 'TEST_RUN_ID', defaultValue: '333', description: 'Test run uuid')
     }
 
     environment {
@@ -101,9 +101,9 @@ pipeline {
                         AS_ID: content.labels.find { it.name == 'AS_ID' }?.value,
                         status: content.status,
                         finishTime: content.stop, // Или другой ключ, содержащий время окончания выполнения
-                        userId: env.USER_ID,
-                        testPlanId: env.TEST_PLAN_ID,
-                        testRunID: env.TEST_RUN_ID
+                        userId: environment.USER_ID,
+                        testPlanId: environment.TEST_PLAN_ID,
+                        testRunID: environment.TEST_RUN_ID
                     ]
                     results << result
                 }

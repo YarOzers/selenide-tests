@@ -10,7 +10,7 @@ pipeline {
         string(name: 'TEST_IDS', defaultValue: '', description: 'Comma-separated list of test IDs to run')
         string(name: 'USER_ID', defaultValue: '', description: 'User id')
         string(name: 'TEST_PLAN_ID', defaultValue: '', description: 'Test plan id')
-        string(name: 'NAME', defaultValue: '', description: 'Test run uuid')
+        string(name: 'TEST_RUN_ID', defaultValue: '', description: 'Test run uuid')
     }
 
     environment {
@@ -21,7 +21,7 @@ pipeline {
         SELENOID_URL = 'http://188.235.130.37:4444/wd/hub'
         USER_ID = "${params.USER_ID}"
         TEST_PLAN_ID = "${params.TEST_PLAN_ID}"
-        NAME = "${params.NAME}"
+        TEST_RUN_ID = "${params.TEST_RUN_ID}"
     }
 
     stages {
@@ -103,7 +103,7 @@ pipeline {
                         finishTime: content.stop, // Или другой ключ, содержащий время окончания выполнения
                         userId: env.USER_ID,
                         testPlanId: env.TEST_PLAN_ID,
-                        name: env.NAME
+                        testRunID: env.TEST_RUN_ID
                     ]
                     results << result
                 }

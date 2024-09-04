@@ -2,6 +2,7 @@ package tests;
 
 import basetests.BaseTest;
 import com.codeborne.selenide.Selenide;
+import io.qameta.allure.AllureId;
 import io.qameta.allure.Step;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,7 @@ public class GoogleSearchTest extends BaseTest {
 
     @Test
     @Tag("1")
+    @AllureId("1")
     @Step("Search in Google test 1")
     void test1() {
         // Exercise
@@ -37,6 +39,7 @@ public class GoogleSearchTest extends BaseTest {
 
     @Test
     @Tag("5")
+    @AllureId("5")
     @Step("Search in Google test 5")
     void test5() {
         // Exercise
@@ -49,6 +52,7 @@ public class GoogleSearchTest extends BaseTest {
 
     @Test
     @Tag("8")
+    @AllureId("8")
     @Step("Search in Google test 8")
     void test8() {
         // Exercise

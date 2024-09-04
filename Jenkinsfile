@@ -87,9 +87,6 @@ pipeline {
         success {
             archiveArtifacts artifacts: 'target/surefire-reports/TEST-*.xml', allowEmptyArchive: true
             script {
-            echo "USER_ID: ${env.USER_ID}"
-            echo "TEST_PLAN_ID: ${env.TEST_PLAN_ID}"
-            echo "TEST_RUN_ID: ${env.TEST_RUN_ID}"
                 // Инициализация файла results.json перед добавлением данных
                 def resultsFile = "${ALLURE_RESULTS_DIR}/results.json"
                 writeFile file: resultsFile, text: '[]' // Создание пустого JSON-массива в файле
@@ -100,22 +97,30 @@ pipeline {
 
                 jsonFiles.each { file ->
                     def content = readJSON file: file
+
                     def result = [
                         AS_ID: content.labels.find { it.name == 'AS_ID' }?.value,
                         status: content.status,
                         finishTime: content.stop, // Или другой ключ, содержащий время окончания выполнения
-                        userId: env.USER_ID,
-                        testPlanId: env.TEST_PLAN_ID,
-                        testRunID: env.TEST_RUN_ID
+                        userId: env.USER_ID ?: 'unknownUserId',
+                        testPlanId: env.TEST_PLAN_ID ?: 'unknownTestPlanId',
+                        testRunID: env.TEST_RUN_ID ?: 'unknownTestRunId'
                     ]
+
+                    // Выводим отладочную информацию
+                    echo "Processing file: ${file}"
+                    echo "Result: ${result}"
+
                     results << result
                 }
 
                 // Запись массива в results.json
                 writeJSON file: resultsFile, json: results
-                echo "Result: ${result}"
+
                 // Отправка файла на сервер
                 def resultsJson = readFile file: resultsFile
+                echo "Sending results: ${resultsJson}" // Вывод содержимого перед отправкой
+
                 httpRequest httpMode: 'POST',
                             url: 'http://188.235.130.37:9111/api/test-results',
                             requestBody: resultsJson,

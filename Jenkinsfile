@@ -10,6 +10,7 @@ pipeline {
         string(name: 'TEST_IDS', defaultValue: '', description: 'Comma-separated list of test IDs to run')
         string(name: 'USER_ID', defaultValue: '', description: 'User id')
         string(name: 'TEST_PLAN_ID', defaultValue: '', description: 'Test plan id')
+        string(name: 'UUID', defaultValue: '', description: 'Test run uuid')
     }
 
     environment {
@@ -18,6 +19,9 @@ pipeline {
         GITHUB_REPO_URL = 'https://github.com/YarOzers/selenide-tests' // HTTPS URL репозитория
         GIT_CREDENTIALS_ID = 'jenkins-git-token' // ID, который вы назначили в Jenkins для токена
         SELENOID_URL = 'http://188.235.130.37:4444/wd/hub'
+        USER_ID = "${params.USER_ID}"
+        TEST_PLAN_ID = "${params.TEST_PLAN_ID}"
+        UUID = "${params.UUID}"
     }
 
     stages {
@@ -97,8 +101,9 @@ pipeline {
                         AS_ID: content.labels.find { it.name == 'AS_ID' }?.value,
                         status: content.status,
                         finishTime: content.stop, // Или другой ключ, содержащий время окончания выполнения
-                        userId: ${params.USER_ID},
-                        testPlanId: ${params.TEST_PLAN_ID}
+                        userId: env.USER_ID,
+                        testPlanId: env.TEST_PLAN_ID,
+                        uuid: env.UUID
                     ]
                     results << result
                 }

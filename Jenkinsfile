@@ -8,6 +8,8 @@ pipeline {
 
     parameters {
         string(name: 'TEST_IDS', defaultValue: '', description: 'Comma-separated list of test IDs to run')
+        string(name: 'USER_ID', defaultValue: '', description: 'User id')
+        string(name: 'TEST_PLAN_ID', defaultValue: '', description: 'Test plan id')
     }
 
     environment {
@@ -94,7 +96,9 @@ pipeline {
                     def result = [
                         AS_ID: content.labels.find { it.name == 'AS_ID' }?.value,
                         status: content.status,
-                        finishTime: content.stop // Или другой ключ, содержащий время окончания выполнения
+                        finishTime: content.stop, // Или другой ключ, содержащий время окончания выполнения
+                        userId: ${params.USER_ID},
+                        testPlanId: ${params.TEST_PLAN_ID}
                     ]
                     results << result
                 }

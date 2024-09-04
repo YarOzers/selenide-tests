@@ -38,7 +38,7 @@ pipeline {
                     sh "mvn clean test ${testIds} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true -Dallure.results.directory=target/allure-results"
                 }
             }
-        } // <-- Закрывающая скобка для блока Run Tests
+        }
 
         stage('Generate Allure Report') {
             steps {
@@ -64,7 +64,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Debug Directories') {
             steps {
                 script {
@@ -81,16 +81,30 @@ pipeline {
         success {
             archiveArtifacts artifacts: 'target/surefire-reports/TEST-*.xml', allowEmptyArchive: true
             script {
-                def reportFiles = sh(script: 'find target/surefire-reports -name "TEST-*.xml"', returnStdout: true).trim()
-                if (reportFiles) {
-                    def result = sh(script: "cat '${reportFiles}'", returnStdout: true) // экранирование переменной
-                    httpRequest httpMode: 'POST',
-                                url: 'http://188.235.130.37:9111/api/test-results',
-                                requestBody: result,
-                                contentType: 'APPLICATION_XML'
-                } else {
-                    echo "Test report not found, skipping HTTP request."
+                // Сбор данных из всех *-result.json файлов в массив
+                def jsonFiles = sh(script: "find ${ALLURE_RESULTS_DIR} -name '*-result.json'", returnStdout: true).trim().split('\n')
+                def results = []
+
+                jsonFiles.each { file ->
+                    def content = readJSON file: file
+                    def result = [
+                        AS_ID: content.labels.find { it.name == 'AS_ID' }?.value,
+                        status: content.status,
+                        finishTime: content.stop // Или другой ключ, содержащий время окончания выполнения
+                    ]
+                    results << result
                 }
+
+                // Запись массива в results.json
+                def resultsFile = "${ALLURE_RESULTS_DIR}/results.json"
+                writeJSON file: resultsFile, json: results
+
+                // Отправка файла на сервер
+                def resultsJson = readFile file: resultsFile
+                httpRequest httpMode: 'POST',
+                            url: 'http://188.235.130.37:9111/api/test-results',
+                            requestBody: resultsJson,
+                            contentType: 'APPLICATION_JSON'
             }
         }
         failure {

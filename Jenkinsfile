@@ -101,9 +101,9 @@ pipeline {
                         AS_ID: content.labels.find { it.name == 'AS_ID' }?.value,
                         status: content.status,
                         finishTime: content.stop, // Или другой ключ, содержащий время окончания выполнения
-                        userId: environment.USER_ID,
-                        testPlanId: environment.TEST_PLAN_ID,
-                        testRunID: environment.TEST_RUN_ID
+                        userId: env.USER_ID,
+                        testPlanId: env.TEST_PLAN_ID,
+                        testRunID: env.TEST_RUN_ID
                     ]
                     results << result
                 }

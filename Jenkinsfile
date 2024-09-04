@@ -81,6 +81,10 @@ pipeline {
         success {
             archiveArtifacts artifacts: 'target/surefire-reports/TEST-*.xml', allowEmptyArchive: true
             script {
+                // Инициализация файла results.json перед добавлением данных
+                def resultsFile = "${ALLURE_RESULTS_DIR}/results.json"
+                writeFile file: resultsFile, text: '[]' // Создание пустого JSON-массива в файле
+
                 // Сбор данных из всех *-result.json файлов в массив
                 def jsonFiles = sh(script: "find ${ALLURE_RESULTS_DIR} -name '*-result.json'", returnStdout: true).trim().split('\n')
                 def results = []
@@ -96,7 +100,6 @@ pipeline {
                 }
 
                 // Запись массива в results.json
-                def resultsFile = "${ALLURE_RESULTS_DIR}/results.json"
                 writeJSON file: resultsFile, json: results
 
                 // Отправка файла на сервер

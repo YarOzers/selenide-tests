@@ -41,6 +41,7 @@ pipeline {
                     def testIds = params.TEST_IDS ? "-Dgroups=${params.TEST_IDS}" : ""
                     echo "Running tests with options: ${testIds}"
                     // Запуск Selenide тестов через Selenoid
+                    echo "TEST_IDS received: ${params.TEST_IDS}"
                     sh "mvn clean test ${testIds} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true -Dallure.results.directory=target/allure-results"
                 }
             }

@@ -38,10 +38,10 @@ public class GoogleSearchTest extends BaseTest {
     }
 
     @Test
-    @Tag("5")
-    @AllureId("5")
-    @Step("Search in Google test 5")
-    void test5() {
+    @Tag("2")
+    @AllureId("2")
+    @Step("Search in Google test 2")
+    void test2() {
         // Exercise
         open("https://bonigarcia.dev/selenium-webdriver-java/");
         String title = title();
@@ -51,10 +51,10 @@ public class GoogleSearchTest extends BaseTest {
     }
 
     @Test
-    @Tag("8")
-    @AllureId("8")
-    @Step("Search in Google test 8")
-    void test8() {
+    @Tag("3")
+    @AllureId("3")
+    @Step("Search in Google test 3")
+    void test3() {
         // Exercise
         open("https://bonigarcia.dev/selenium-webdriver-java/");
         String title = title();

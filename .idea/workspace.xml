@@ -5,9 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="05564692-dc70-4d82-a3a3-161e8f5cca99" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_04_09_2024_19_37__Changes_.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/basetests/BaseAppiumTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/examples/UseFaker.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/tests/SimpleMobileTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_04_09_2024_19_37_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_04_09_2024_19_37__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Jenkinsfile" beforeDir="false" afterPath="$PROJECT_DIR$/Jenkinsfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/basetests/BaseTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/basetests/BaseSelenideTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tests/GoogleSearchTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/tests/GoogleSearchTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,6 +51,8 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;JUnit.GoogleSearchTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.SimpleMobileTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.SimpleMobileTest.testButtonClick.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
@@ -58,7 +67,7 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JUnit.SimpleMobileTest">
     <configuration name="GoogleSearchTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="selenide-tests" />
       <extension name="coverage">
@@ -74,8 +83,41 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="SimpleMobileTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="selenide-tests" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="tests.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="tests" />
+      <option name="MAIN_CLASS_NAME" value="tests.SimpleMobileTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SimpleMobileTest.testButtonClick" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="selenide-tests" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="tests.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="tests" />
+      <option name="MAIN_CLASS_NAME" value="tests.SimpleMobileTest" />
+      <option name="METHOD_NAME" value="testButtonClick" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.SimpleMobileTest" />
+        <item itemvalue="JUnit.SimpleMobileTest.testButtonClick" />
         <item itemvalue="JUnit.GoogleSearchTest" />
         <item itemvalue="JUnit.GoogleSearchTest" />
         <item itemvalue="JUnit.GoogleSearchTest" />
@@ -100,7 +142,11 @@
       <workItem from="1725195348906" duration="26087000" />
       <workItem from="1725368153779" duration="5000" />
       <workItem from="1725368187617" duration="923000" />
-      <workItem from="1725536377566" duration="2898000" />
+      <workItem from="1725536377566" duration="6438000" />
+      <workItem from="1726050538312" duration="41000" />
+      <workItem from="1726114580426" duration="8460000" />
+      <workItem from="1726144817900" duration="22000" />
+      <workItem from="1726205514266" duration="2182000" />
     </task>
     <servers />
   </component>

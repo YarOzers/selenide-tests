@@ -6,7 +6,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import io.qameta.allure.selenide.AllureSelenide;
 import org.junit.jupiter.api.BeforeAll;
 
-public class BaseTest {
+public class BaseSelenideTest {
 
     @BeforeAll
     public static void setUp() {

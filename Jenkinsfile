@@ -99,13 +99,19 @@ pipeline {
                 jsonFiles.each { file ->
                     def content = readJSON file: file
 
+                    // Получаем URL текущей сборки для формирования ссылки на Allure отчет
+                    def buildUrl = env.BUILD_URL
+                    def allureReportUrl = "${buildUrl}allure/#suites/${content.uuid}"
+
+                    // Формируем объект result, добавляем ссылку на отчет
                     def result = [
                         AS_ID: content.labels.find { it.name == 'AS_ID' }?.value,
                         status: content.status,
                         finishTime: content.stop, // Или другой ключ, содержащий время окончания выполнения
                         userId: env.USER_ID ?: 'unknownUserId',
                         testPlanId: env.TEST_PLAN_ID ?: 'unknownTestPlanId',
-                        testRunID: env.TEST_RUN_ID ?: 'unknownTestRunId'
+                        testRunID: env.TEST_RUN_ID ?: 'unknownTestRunId',
+                        reportUrl: allureReportUrl // Добавляем ссылку на Allure отчет
                     ]
 
                     // Выводим отладочную информацию
@@ -119,12 +125,12 @@ pipeline {
                 writeJSON file: resultsFile, json: results
 
                 // Отправка файла на сервер
-                def resultsJson = readFile file: resultsFile
-                echo "Sending results: ${resultsJson}" // Вывод содержимого перед отправкой
+                def updatedResultsJson = readFile file: resultsFile
+                echo "Sending results with report URL: ${updatedResultsJson}" // Вывод содержимого перед отправкой
 
                 httpRequest httpMode: 'POST',
                             url: 'http://188.235.130.37:9111/api/test-results',
-                            requestBody: resultsJson,
+                            requestBody: updatedResultsJson,
                             contentType: 'APPLICATION_JSON'
             }
         }

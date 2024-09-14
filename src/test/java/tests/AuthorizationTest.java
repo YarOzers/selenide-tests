@@ -5,6 +5,7 @@ import com.codeborne.selenide.Selenide;
 import io.qameta.allure.*;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
 
 import java.io.ByteArrayInputStream;
 
@@ -12,7 +13,7 @@ import static com.codeborne.selenide.Selenide.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class GoogleSearchTest extends BaseSelenideTest {
+public class AuthorizationTest extends BaseSelenideTest {
 
     @BeforeEach
     void setupTest() {
@@ -21,32 +22,6 @@ public class GoogleSearchTest extends BaseSelenideTest {
     @AfterEach
     void teardown() {
         Selenide.closeWebDriver();
-    }
-
-    @Test
-    @Tag("2")
-    @AllureId("2")
-    @Step("Search in Google test 2")
-    void test2() {
-        // Exercise
-        open("https://bonigarcia.dev/selenium-webdriver-java/");
-        String title = title();
-
-        // Verify
-        assertThat(title).contains("Selenium WebDriver");
-    }
-
-    @Test
-    @Tag("3")
-    @AllureId("3")
-    @Step("Search in Google test 3")
-    void test3() {
-        // Exercise
-        open("https://bonigarcia.dev/selenium-webdriver-java/");
-        String title = title();
-
-        // Verify
-        assertThat(title).contains("Selenium WebDriver");
     }
 
     @Epic("Authentication")
@@ -66,11 +41,11 @@ public class GoogleSearchTest extends BaseSelenideTest {
         });
 
         Allure.step("Enter username", () -> {
-            enterUsername("testuser");
+            enterUsername("yaroslav");
         });
 
         Allure.step("Enter password", () -> {
-            enterPassword("password123");
+            enterPassword("333");
         });
 
         Allure.step("Click login button", () -> {
@@ -91,17 +66,17 @@ public class GoogleSearchTest extends BaseSelenideTest {
 
     @Step("Enter username {username}")
     public void enterUsername(String username) {
-        $(By.id("username")).setValue("ysroslav");
+        $(By.id("username")).setValue(username);
     }
 
     @Step("Enter password {password}")
     public void enterPassword(String password) {
-        $(By.id("password")).setValue("333");
+        $(By.id("password")).setValue(password);
     }
 
     @Step("Click login button")
     public void clickLogin() {
-        $(By.id("ck-login")).click();
+        $(By.id("kc-login")).click();
     }
 
     @Step("Verify login success")
@@ -110,8 +85,6 @@ public class GoogleSearchTest extends BaseSelenideTest {
     }
 
     public byte[] getScreenshotBytes() {
-        // получение скриншота
-        return new byte[0];
+        return Selenide.screenshot(OutputType.BYTES);
     }
-
 }

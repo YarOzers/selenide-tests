@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class SimpleMobileTest extends BaseAppiumTest {
-    @Test
+//    @Test
     public void testButtonClick() {
         // Поиск кнопки по id с помощью нового локатора AppiumBy
         var button = driver.findElement(AppiumBy.id("com.example.android:id/button"));

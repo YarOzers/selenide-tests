@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven' // Имя настройки Maven, указанное в Global Tool Configuration Jenkins
-        allure 'Allure'  // Имя настройки Allure
+        maven 'Maven' // Убедитесь, что это имя настройки Maven, указанное в Jenkins
+        allure 'Allure'  // Убедитесь, что это имя настройки Allure
     }
 
     parameters {
@@ -16,8 +16,8 @@ pipeline {
     environment {
         ALLURE_RESULTS_DIR = 'target/allure-results'
         ALLURE_REPORT_DIR = 'target/allure-report'
-        GITHUB_REPO_URL = 'https://github.com/YarOzers/selenide-tests' // HTTPS URL репозитория
-        GIT_CREDENTIALS_ID = 'jenkins-git-token' // ID, который вы назначили в Jenkins для токена
+        GITHUB_REPO_URL = 'https://github.com/YarOzers/selenide-tests'
+        GIT_CREDENTIALS_ID = 'jenkins-git-token'
         SELENOID_URL = 'http://188.235.130.37:4444/wd/hub'
         USER_ID = "${params.USER_ID}"
         TEST_PLAN_ID = "${params.TEST_PLAN_ID}"
@@ -27,7 +27,6 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Используем токен для аутентификации
                 checkout([$class: 'GitSCM',
                           branches: [[name: '*/main']],
                           userRemoteConfigs: [[url: "${GITHUB_REPO_URL}", credentialsId: "${GIT_CREDENTIALS_ID}"]]
@@ -40,9 +39,7 @@ pipeline {
                 script {
                     def testIds = params.TEST_IDS ? "-Dgroups=${params.TEST_IDS}" : ""
                     echo "Running tests with options: ${testIds}"
-                    // Запуск Selenide тестов через Selenoid
-                    echo "TEST_IDS received: ${params.TEST_IDS}"
-                    sh "mvn clean test ${testIds} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true -Dallure.results.directory=target/allure-results"
+                    sh "mvn clean test ${testIds} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true -Dallure.results.directory=${ALLURE_RESULTS_DIR}"
                 }
             }
         }
@@ -50,7 +47,7 @@ pipeline {
         stage('Generate Allure Report') {
             steps {
                 script {
-                    // Проверка существования директории с результатами тестов перед генерацией отчета
+                    // Генерируем Allure отчет независимо от успешности или провала тестов
                     if (fileExists("${ALLURE_RESULTS_DIR}")) {
                         sh "allure generate ${ALLURE_RESULTS_DIR} -o ${ALLURE_REPORT_DIR} || true"
                     } else {
@@ -78,55 +75,50 @@ pipeline {
                     sh 'echo "Listing target directory contents:"'
                     sh 'ls -la target'
                     sh 'echo "Listing allure-results directory contents:"'
-                    sh 'ls -la target/allure-results'
+                    sh 'ls -la target/allure-results || echo "No allure-results directory found."'
                 }
             }
         }
     }
 
     post {
-        success {
+        always {
+            // Выполняем действия после завершения пайплайна в любом случае
             archiveArtifacts artifacts: 'target/surefire-reports/TEST-*.xml', allowEmptyArchive: true
-            script {
-                // Инициализация файла results.json перед добавлением данных
-                def resultsFile = "${ALLURE_RESULTS_DIR}/results.json"
-                writeFile file: resultsFile, text: '[]' // Создание пустого JSON-массива в файле
 
-                // Сбор данных из всех *-result.json файлов в массив
+            script {
+                def resultsFile = "${ALLURE_RESULTS_DIR}/results.json"
+                writeFile file: resultsFile, text: '[]' // Создаем пустой JSON, если файл отсутствует
+
                 def jsonFiles = sh(script: "find ${ALLURE_RESULTS_DIR} -name '*-result.json'", returnStdout: true).trim().split('\n')
                 def results = []
 
                 jsonFiles.each { file ->
-                    def content = readJSON file: file
+                    if (file) {
+                        def content = readJSON file: file
+                        def buildUrl = env.BUILD_URL
+                        def allureReportUrl = "${buildUrl}allure/#suites/${content.uuid}"
 
-                    // Получаем URL текущей сборки для формирования ссылки на Allure отчет
-                    def buildUrl = env.BUILD_URL
-                    def allureReportUrl = "${buildUrl}allure/#suites/${content.uuid}"
+                        def result = [
+                            AS_ID: content.labels.find { it.name == 'AS_ID' }?.value,
+                            status: content.status,
+                            finishTime: content.stop,
+                            userId: env.USER_ID ?: 'unknownUserId',
+                            testPlanId: env.TEST_PLAN_ID ?: 'unknownTestPlanId',
+                            testRunID: env.TEST_RUN_ID ?: 'unknownTestRunId',
+                            reportUrl: allureReportUrl
+                        ]
 
-                    // Формируем объект result, добавляем ссылку на отчет
-                    def result = [
-                        AS_ID: content.labels.find { it.name == 'AS_ID' }?.value,
-                        status: content.status,
-                        finishTime: content.stop, // Или другой ключ, содержащий время окончания выполнения
-                        userId: env.USER_ID ?: 'unknownUserId',
-                        testPlanId: env.TEST_PLAN_ID ?: 'unknownTestPlanId',
-                        testRunID: env.TEST_RUN_ID ?: 'unknownTestRunId',
-                        reportUrl: allureReportUrl // Добавляем ссылку на Allure отчет
-                    ]
-
-                    // Выводим отладочную информацию
-                    echo "Processing file: ${file}"
-                    echo "Result: ${result}"
-
-                    results << result
+                        echo "Processing file: ${file}"
+                        echo "Result: ${result}"
+                        results << result
+                    }
                 }
 
-                // Запись массива в results.json
                 writeJSON file: resultsFile, json: results
 
-                // Отправка файла на сервер
                 def updatedResultsJson = readFile file: resultsFile
-                echo "Sending results with report URL: ${updatedResultsJson}" // Вывод содержимого перед отправкой
+                echo "Sending results with report URL: ${updatedResultsJson}"
 
                 httpRequest httpMode: 'POST',
                             url: 'http://188.235.130.37:9111/api/test-results',
@@ -134,8 +126,13 @@ pipeline {
                             contentType: 'APPLICATION_JSON'
             }
         }
+
         failure {
             echo "Build failed!"
+        }
+
+        success {
+            echo "Build succeeded!"
         }
     }
 }

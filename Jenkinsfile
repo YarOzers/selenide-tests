@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven' // Убедитесь, что это имя настройки Maven, указанное в Jenkins
-        allure 'Allure'  // Убедитесь, что это имя настройки Allure
+        maven 'Maven' // Make sure this is the correct name for your Maven tool setup in Jenkins
+        allure 'Allure' // Ensure that this is the correct name of the Allure tool in Jenkins
     }
 
     parameters {
@@ -37,9 +37,9 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    def testIds = params.TEST_IDS ? "-Dgroups=${params.TEST_IDS}" : ""
-                    echo "Running tests with options: ${testIds}"
-                    sh "mvn clean test ${testIds} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true -Dallure.results.directory=${ALLURE_RESULTS_DIR}"
+                    def testIdsOption = params.TEST_IDS ? "-Dgroups=${params.TEST_IDS}" : ""
+                    echo "Running tests with options: ${testIdsOption}"
+                    sh "mvn clean test ${testIdsOption} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true -Dallure.results.directory=${ALLURE_RESULTS_DIR}"
                 }
             }
         }
@@ -47,11 +47,11 @@ pipeline {
         stage('Generate Allure Report') {
             steps {
                 script {
-                    // Генерируем Allure отчет независимо от успешности или провала тестов
+                    // Generate Allure report only if the results directory exists
                     if (fileExists("${ALLURE_RESULTS_DIR}")) {
                         sh "allure generate ${ALLURE_RESULTS_DIR} -o ${ALLURE_REPORT_DIR} || true"
                     } else {
-                        echo "Allure results directory does not exist. Skipping report generation."
+                        echo "No Allure results directory found, skipping report generation."
                     }
                 }
             }
@@ -63,7 +63,7 @@ pipeline {
                     if (fileExists("${ALLURE_REPORT_DIR}")) {
                         allure includeProperties: false, jdk: '', results: [[path: "${ALLURE_RESULTS_DIR}"]]
                     } else {
-                        echo "Allure report directory does not exist. Skipping report publication."
+                        echo "Allure report directory not found, skipping report publication."
                     }
                 }
             }
@@ -72,9 +72,9 @@ pipeline {
         stage('Debug Directories') {
             steps {
                 script {
-                    sh 'echo "Listing target directory contents:"'
+                    echo "Listing target directory contents:"
                     sh 'ls -la target'
-                    sh 'echo "Listing allure-results directory contents:"'
+                    echo "Listing allure-results directory contents:"
                     sh 'ls -la target/allure-results || echo "No allure-results directory found."'
                 }
             }
@@ -83,12 +83,12 @@ pipeline {
 
     post {
         always {
-            // Выполняем действия после завершения пайплайна в любом случае
+            // Archive the test reports and ensure a JSON structure for test results
             archiveArtifacts artifacts: 'target/surefire-reports/TEST-*.xml', allowEmptyArchive: true
 
             script {
                 def resultsFile = "${ALLURE_RESULTS_DIR}/results.json"
-                writeFile file: resultsFile, text: '[]' // Создаем пустой JSON, если файл отсутствует
+                writeFile file: resultsFile, text: '[]' // Create an empty JSON if none exists
 
                 def jsonFiles = sh(script: "find ${ALLURE_RESULTS_DIR} -name '*-result.json'", returnStdout: true).trim().split('\n')
                 def results = []
@@ -97,12 +97,12 @@ pipeline {
                     if (file) {
                         def content = readJSON file: file
                         def buildUrl = env.BUILD_URL
-                        def allureReportUrl = "${buildUrl}allure/#suites/${content.uuid}"
+                        def allureReportUrl = "${buildUrl}allure/#suites/${content.uuid ?: 'unknownUUID'}"
 
                         def result = [
-                            AS_ID: content.labels.find { it.name == 'AS_ID' }?.value,
-                            status: content.status,
-                            finishTime: content.stop,
+                            AS_ID: content.labels?.find { it.name == 'AS_ID' }?.value ?: 'unknownASID',
+                            status: content.status ?: 'unknownStatus',
+                            finishTime: content.stop ?: 'unknownFinishTime',
                             userId: env.USER_ID ?: 'unknownUserId',
                             testPlanId: env.TEST_PLAN_ID ?: 'unknownTestPlanId',
                             testRunID: env.TEST_RUN_ID ?: 'unknownTestRunId',

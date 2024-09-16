@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="05564692-dc70-4d82-a3a3-161e8f5cca99" name="Changes" comment="" />
+    <list default="true" id="05564692-dc70-4d82-a3a3-161e8f5cca99" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/test/java/basetests/BaseSelenideTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/basetests/BaseSelenideTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tests/AuthorizationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/tests/AuthorizationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tests/CreateProjectTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/tests/CreateProjectTest.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -171,7 +175,7 @@
       <workItem from="1726050538312" duration="41000" />
       <workItem from="1726114580426" duration="8460000" />
       <workItem from="1726144817900" duration="22000" />
-      <workItem from="1726205514266" duration="17116000" />
+      <workItem from="1726205514266" duration="17843000" />
     </task>
     <servers />
   </component>

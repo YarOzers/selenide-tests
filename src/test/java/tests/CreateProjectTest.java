@@ -7,19 +7,13 @@ import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.github.javafaker.Faker;
 import io.qameta.allure.*;
-import org.apache.xmlbeans.impl.xb.xsdschema.All;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
-import org.openqa.selenium.WebElement;
 
 import java.io.ByteArrayInputStream;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import static com.codeborne.selenide.Selenide.*;
 

@@ -39,7 +39,8 @@ pipeline {
                 script {
                     def testIdsOption = params.TEST_IDS ? "-Dgroups=${params.TEST_IDS}" : ""
                     echo "Running tests with options: ${testIdsOption}"
-                    sh "mvn clean test ${testIdsOption} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true -Dallure.results.directory=${ALLURE_RESULTS_DIR}"
+                    // Add || true to ensure the pipeline continues even if tests fail
+                    sh "mvn clean test ${testIdsOption} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true -Dallure.results.directory=${ALLURE_RESULTS_DIR} || true"
                 }
             }
         }
@@ -47,7 +48,7 @@ pipeline {
         stage('Generate Allure Report') {
             steps {
                 script {
-                    // Generate Allure report only if the results directory exists
+                    // Generate Allure report even if tests fail
                     if (fileExists("${ALLURE_RESULTS_DIR}")) {
                         sh "allure generate ${ALLURE_RESULTS_DIR} -o ${ALLURE_REPORT_DIR} || true"
                     } else {

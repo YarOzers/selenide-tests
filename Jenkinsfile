@@ -109,7 +109,7 @@ pipeline {
                             userId: env.USER_ID ?: 'unknownUserId',
                             testPlanId: env.TEST_PLAN_ID ?: 'unknownTestPlanId',
                             testRunID: env.TEST_RUN_ID ?: 'unknownTestRunId',
-                            projectId: env.PROJECT_ID ? 'unknownProjectId',
+                            projectId: env.PROJECT_ID ?: 'unknownProjectId',
                             reportUrl: allureReportUrl
                         ]
 

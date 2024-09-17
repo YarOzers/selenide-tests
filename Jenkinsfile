@@ -88,7 +88,7 @@ pipeline {
         always {
             script {
                 // Команда для поиска всех JSON файлов в каталоге allure-results
-                def jsonFilesOutput = bat(script: "dir /b target\\allure-results\\*-result.json", returnStdout: true).trim()
+                def jsonFilesOutput = bat(script: 'dir /b "target\\allure-results\\*-result.json"', returnStdout: true).trim()
                 if (jsonFilesOutput) {
                     // Если результат не пустой, обрабатываем каждый файл
                     def jsonFiles = jsonFilesOutput.split('\r\n')

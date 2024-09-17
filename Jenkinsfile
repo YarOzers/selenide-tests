@@ -11,7 +11,7 @@ pipeline {
         string(name: 'USER_ID', defaultValue: '111', description: 'User id')
         string(name: 'TEST_PLAN_ID', defaultValue: '222', description: 'Test plan id')
         string(name: 'TEST_RUN_ID', defaultValue: '333', description: 'Test run uuid')
-        string(name: 'PROJECT_ID' ,defaultValue: 1, description: 'Project id')
+        string(name: 'PROJECT_ID' ,defaultValue: '1', description: 'Project id')
     }
 
     environment {

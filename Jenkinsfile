@@ -122,7 +122,7 @@ pipeline {
                     echo "Sending results with report URL: ${updatedResultsJson}"
 
                     httpRequest httpMode: 'POST',
-                                url: 'https://188.235.130.37:9111/jenkins-api/test-results',
+                                url: 'https://dragon-tms.tplinkdns.com:9111/jenkins-api/test-results',
                                 requestBody: updatedResultsJson,
                                 contentType: 'APPLICATION_JSON'
                 } else {

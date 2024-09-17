@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven' // Make sure this is the correct name for your Maven tool setup in Jenkins
-        allure 'Allure' // Ensure that this is the correct name of the Allure tool in Jenkins
+        maven 'Maven' // Проверьте, что это правильное имя Maven в Jenkins
+        allure 'Allure' // Убедитесь, что это правильное имя инструмента Allure в Jenkins
     }
 
     parameters {
@@ -41,7 +41,6 @@ pipeline {
                 script {
                     def testIdsOption = params.TEST_IDS ? "-Dgroups=${params.TEST_IDS}" : ""
                     echo "Running tests with options: ${testIdsOption}"
-                    // Используем bat для Windows
                     bat "mvn clean test ${testIdsOption} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true -Dallure.results.directory=${ALLURE_RESULTS_DIR} || exit 0"
                 }
             }
@@ -50,7 +49,6 @@ pipeline {
         stage('Generate Allure Report') {
             steps {
                 script {
-                    // Генерация отчета Allure, даже если тесты провалились
                     if (fileExists("${ALLURE_RESULTS_DIR}")) {
                         bat "allure generate ${ALLURE_RESULTS_DIR} -o ${ALLURE_REPORT_DIR} || exit 0"
                     } else {
@@ -87,7 +85,7 @@ pipeline {
     post {
         always {
             script {
-                // Команда для поиска всех JSON файлов в каталоге allure-results
+                // Поиск всех JSON файлов в каталоге allure-results
                 def jsonFilesOutput = bat(script: 'dir /b "target\\allure-results\\*-result.json"', returnStdout: true).trim()
                 if (jsonFilesOutput) {
                     // Если результат не пустой, обрабатываем каждый файл

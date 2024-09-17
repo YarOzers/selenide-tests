@@ -94,7 +94,9 @@ pipeline {
                 writeFile file: resultsFile, text: '[]' // Создаем пустой JSON, если файла нет
 
                 // Поиск JSON-файлов результатов
-                def jsonFiles = bat(script: "dir /b /s ${ALLURE_RESULTS_DIR}\\*-result.json", returnStdout: true).trim().split('\n')
+                def jsonFilesOutput = bat(script: "dir /b /s ${ALLURE_RESULTS_DIR}\\*-result.json", returnStdout: true).trim()
+                def jsonFiles = jsonFilesOutput.split('\r\n')
+
                 def results = []
 
                 jsonFiles.each { file ->

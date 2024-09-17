@@ -11,6 +11,7 @@ pipeline {
         string(name: 'USER_ID', defaultValue: '111', description: 'User id')
         string(name: 'TEST_PLAN_ID', defaultValue: '222', description: 'Test plan id')
         string(name: 'TEST_RUN_ID', defaultValue: '333', description: 'Test run uuid')
+        string(name: 'PROJECT_ID' ,defaultValue: 1, description: 'Project id')
     }
 
     environment {
@@ -22,6 +23,7 @@ pipeline {
         USER_ID = "${params.USER_ID}"
         TEST_PLAN_ID = "${params.TEST_PLAN_ID}"
         TEST_RUN_ID = "${params.TEST_RUN_ID}"
+        PROJECT_ID = "${params.PROJECT_ID}"
     }
 
     stages {
@@ -107,6 +109,7 @@ pipeline {
                             userId: env.USER_ID ?: 'unknownUserId',
                             testPlanId: env.TEST_PLAN_ID ?: 'unknownTestPlanId',
                             testRunID: env.TEST_RUN_ID ?: 'unknownTestRunId',
+                            projectId: env.PROJECT_ID ? 'unknownProjectId',
                             reportUrl: allureReportUrl
                         ]
 
@@ -122,7 +125,7 @@ pipeline {
                 echo "Sending results with report URL: ${updatedResultsJson}"
 
                 httpRequest httpMode: 'POST',
-                            url: 'http://188.235.130.37:9111/api/test-results',
+                            url: 'http://188.235.130.37:9111/jenkins-api/test-results',
                             requestBody: updatedResultsJson,
                             contentType: 'APPLICATION_JSON'
             }

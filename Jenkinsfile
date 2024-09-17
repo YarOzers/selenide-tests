@@ -87,34 +87,32 @@ pipeline {
             script {
                 // Поиск всех JSON файлов в каталоге allure-results
                 def jsonFilesOutput = bat(script: 'dir /b "target\\allure-results\\*-result.json"', returnStdout: true).trim()
-                echo "JSON files found: ${jsonFilesOutput}"
-                if (jsonFilesOutput) {
-                    // Если результат не пустой, обрабатываем каждый файл
-                    def jsonFiles = jsonFilesOutput.split('\r\n')
 
+                // Разделяем результат на строки и фильтруем нужные файлы
+                def jsonFiles = jsonFilesOutput.split('\r\n').findAll { it.endsWith('-result.json') }
+
+                if (jsonFiles.size() > 0) {
                     def results = []
 
                     jsonFiles.each { file ->
-                        if (file) {
-                            def content = readJSON file: "target\\allure-results\\${file}"
-                            def buildUrl = env.BUILD_URL
-                            def allureReportUrl = "${buildUrl}allure/#suites/${content.uuid ?: 'unknownUUID'}"
+                        echo "Processing file: ${file}"
+                        def content = readJSON file: "target\\allure-results\\${file}"
+                        def buildUrl = env.BUILD_URL
+                        def allureReportUrl = "${buildUrl}allure/#suites/${content.uuid ?: 'unknownUUID'}"
 
-                            def result = [
-                                AS_ID: content.labels?.find { it.name == 'AS_ID' }?.value ?: 'unknownASID',
-                                status: content.status ?: 'unknownStatus',
-                                finishTime: content.stop ?: 'unknownFinishTime',
-                                userId: env.USER_ID ?: 'unknownUserId',
-                                testPlanId: env.TEST_PLAN_ID ?: 'unknownTestPlanId',
-                                testRunID: env.TEST_RUN_ID ?: 'unknownTestRunId',
-                                projectId: env.PROJECT_ID ?: 'unknownProjectId',
-                                reportUrl: allureReportUrl
-                            ]
+                        def result = [
+                            AS_ID: content.labels?.find { it.name == 'AS_ID' }?.value ?: 'unknownASID',
+                            status: content.status ?: 'unknownStatus',
+                            finishTime: content.stop ?: 'unknownFinishTime',
+                            userId: env.USER_ID ?: 'unknownUserId',
+                            testPlanId: env.TEST_PLAN_ID ?: 'unknownTestPlanId',
+                            testRunID: env.TEST_RUN_ID ?: 'unknownTestRunId',
+                            projectId: env.PROJECT_ID ?: 'unknownProjectId',
+                            reportUrl: allureReportUrl
+                        ]
 
-                            echo "Processing file: ${file}"
-                            echo "Result: ${result}"
-                            results << result
-                        }
+                        echo "Result: ${result}"
+                        results << result
                     }
 
                     def resultsFile = "${env.WORKSPACE}\\target\\allure-results\\results.json"

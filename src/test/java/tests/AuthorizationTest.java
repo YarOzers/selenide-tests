@@ -59,7 +59,7 @@ public class AuthorizationTest extends BaseSelenideTest {
 
     @Step("Open login page")
     public void openLoginPage() {
-        open("http://188.235.130.37:4200");
+        open("https://dragon-tms.tplinkdns.com");
     }
 
     @Step("Enter username {username}")

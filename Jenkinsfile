@@ -124,7 +124,9 @@ pipeline {
                     httpRequest httpMode: 'POST',
                                 url: 'https://dragon-tms.tplinkdns.com:9111/api/test-results',
                                 requestBody: updatedResultsJson,
-                                contentType: 'APPLICATION_JSON'
+                                contentType: 'APPLICATION_JSON',
+                                consoleLogResponseBody: true,
+                                ignoreSslErrors: true
                 } else {
                     echo "No result.json files found!"
                 }

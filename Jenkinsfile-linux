@@ -11,12 +11,12 @@ pipeline {
         string(name: 'USER_ID', defaultValue: '111', description: 'User id')
         string(name: 'TEST_PLAN_ID', defaultValue: '222', description: 'Test plan id')
         string(name: 'TEST_RUN_ID', defaultValue: '333', description: 'Test run uuid')
-        string(name: 'PROJECT_ID', defaultValue: '1', description: 'Project id')
+        string(name: 'PROJECT_ID' ,defaultValue: '1', description: 'Project id')
     }
 
     environment {
-        ALLURE_RESULTS_DIR = 'target\\allure-results'
-        ALLURE_REPORT_DIR = 'target\\allure-report'
+        ALLURE_RESULTS_DIR = 'target/allure-results'
+        ALLURE_REPORT_DIR = 'target/allure-report'
         GITHUB_REPO_URL = 'https://github.com/YarOzers/selenide-tests'
         GIT_CREDENTIALS_ID = 'jenkins-git-token'
         SELENOID_URL = 'http://188.235.130.37:4444/wd/hub'
@@ -41,8 +41,8 @@ pipeline {
                 script {
                     def testIdsOption = params.TEST_IDS ? "-Dgroups=${params.TEST_IDS}" : ""
                     echo "Running tests with options: ${testIdsOption}"
-                    // Используем bat для Windows
-                    bat "mvn clean test ${testIdsOption} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true -Dallure.results.directory=${ALLURE_RESULTS_DIR} || exit 0"
+                    // Add || true to ensure the pipeline continues even if tests fail
+                    sh "mvn clean test ${testIdsOption} -Dselenide.remote=${SELENOID_URL} -Dselenide.browser=chrome -Dselenide.browserCapabilities.enableVNC=true -Dallure.results.directory=${ALLURE_RESULTS_DIR} || true"
                 }
             }
         }
@@ -50,9 +50,9 @@ pipeline {
         stage('Generate Allure Report') {
             steps {
                 script {
-                    // Генерация отчета Allure, даже если тесты провалились
+                    // Generate Allure report even if tests fail
                     if (fileExists("${ALLURE_RESULTS_DIR}")) {
-                        bat "allure generate ${ALLURE_RESULTS_DIR} -o ${ALLURE_REPORT_DIR} || exit 0"
+                        sh "allure generate ${ALLURE_RESULTS_DIR} -o ${ALLURE_REPORT_DIR} || true"
                     } else {
                         echo "No Allure results directory found, skipping report generation."
                     }
@@ -76,9 +76,9 @@ pipeline {
             steps {
                 script {
                     echo "Listing target directory contents:"
-                    bat 'dir target'
+                    sh 'ls -la target'
                     echo "Listing allure-results directory contents:"
-                    bat 'dir target\\allure-results || echo "No allure-results directory found."'
+                    sh 'ls -la target/allure-results || echo "No allure-results directory found."'
                 }
             }
         }
@@ -86,15 +86,14 @@ pipeline {
 
     post {
         always {
-            // Архивируем результаты тестов
-            archiveArtifacts artifacts: 'target\\surefire-reports\\TEST-*.xml', allowEmptyArchive: true
+            // Archive the test reports and ensure a JSON structure for test results
+            archiveArtifacts artifacts: 'target/surefire-reports/TEST-*.xml', allowEmptyArchive: true
 
             script {
-                def resultsFile = "${ALLURE_RESULTS_DIR}\\results.json"
-                writeFile file: resultsFile, text: '[]' // Создаем пустой JSON, если файла нет
+                def resultsFile = "${ALLURE_RESULTS_DIR}/results.json"
+                writeFile file: resultsFile, text: '[]' // Create an empty JSON if none exists
 
-                // Поиск JSON-файлов результатов
-                def jsonFiles = bat(script: "dir /b /s ${ALLURE_RESULTS_DIR}\\*-result.json", returnStdout: true).trim().split('\n')
+                def jsonFiles = sh(script: "find ${ALLURE_RESULTS_DIR} -name '*-result.json'", returnStdout: true).trim().split('\n')
                 def results = []
 
                 jsonFiles.each { file ->

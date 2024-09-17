@@ -86,51 +86,51 @@ pipeline {
 
     post {
         always {
-            // Архивируем результаты тестов
-            archiveArtifacts artifacts: 'target\\surefire-reports\\TEST-*.xml', allowEmptyArchive: true
-
             script {
-                def resultsFile = "${ALLURE_RESULTS_DIR}\\results.json"
-                writeFile file: resultsFile, text: '[]' // Создаем пустой JSON, если файла нет
+                // Команда для поиска всех JSON файлов в каталоге allure-results
+                def jsonFilesOutput = bat(script: "dir /b target\\allure-results\\*-result.json", returnStdout: true).trim()
+                if (jsonFilesOutput) {
+                    // Если результат не пустой, обрабатываем каждый файл
+                    def jsonFiles = jsonFilesOutput.split('\r\n')
 
-                // Поиск JSON-файлов результатов
-                def jsonFilesOutput = bat(script: "dir /b /s ${ALLURE_RESULTS_DIR}\\*-result.json", returnStdout: true).trim()
-                def jsonFiles = jsonFilesOutput.split('\r\n')
+                    def results = []
 
-                def results = []
+                    jsonFiles.each { file ->
+                        if (file) {
+                            def content = readJSON file: "target\\allure-results\\${file}"
+                            def buildUrl = env.BUILD_URL
+                            def allureReportUrl = "${buildUrl}allure/#suites/${content.uuid ?: 'unknownUUID'}"
 
-                jsonFiles.each { file ->
-                    if (file) {
-                        def content = readJSON file: file
-                        def buildUrl = env.BUILD_URL
-                        def allureReportUrl = "${buildUrl}allure/#suites/${content.uuid ?: 'unknownUUID'}"
+                            def result = [
+                                AS_ID: content.labels?.find { it.name == 'AS_ID' }?.value ?: 'unknownASID',
+                                status: content.status ?: 'unknownStatus',
+                                finishTime: content.stop ?: 'unknownFinishTime',
+                                userId: env.USER_ID ?: 'unknownUserId',
+                                testPlanId: env.TEST_PLAN_ID ?: 'unknownTestPlanId',
+                                testRunID: env.TEST_RUN_ID ?: 'unknownTestRunId',
+                                projectId: env.PROJECT_ID ?: 'unknownProjectId',
+                                reportUrl: allureReportUrl
+                            ]
 
-                        def result = [
-                            AS_ID: content.labels?.find { it.name == 'AS_ID' }?.value ?: 'unknownASID',
-                            status: content.status ?: 'unknownStatus',
-                            finishTime: content.stop ?: 'unknownFinishTime',
-                            userId: env.USER_ID ?: 'unknownUserId',
-                            testPlanId: env.TEST_PLAN_ID ?: 'unknownTestPlanId',
-                            testRunID: env.TEST_RUN_ID ?: 'unknownTestRunId',
-                            projectId: env.PROJECT_ID ?: 'unknownProjectId',
-                            reportUrl: allureReportUrl
-                        ]
-
-                        echo "Processing file: ${file}"
-                        echo "Result: ${result}"
-                        results << result
+                            echo "Processing file: ${file}"
+                            echo "Result: ${result}"
+                            results << result
+                        }
                     }
+
+                    def resultsFile = "${env.WORKSPACE}\\target\\allure-results\\results.json"
+                    writeJSON file: resultsFile, json: results
+
+                    def updatedResultsJson = readFile file: resultsFile
+                    echo "Sending results with report URL: ${updatedResultsJson}"
+
+                    httpRequest httpMode: 'POST',
+                                url: 'http://188.235.130.37:9111/jenkins-api/test-results',
+                                requestBody: updatedResultsJson,
+                                contentType: 'APPLICATION_JSON'
+                } else {
+                    echo "No result.json files found!"
                 }
-
-                writeJSON file: resultsFile, json: results
-
-                def updatedResultsJson = readFile file: resultsFile
-                echo "Sending results with report URL: ${updatedResultsJson}"
-
-                httpRequest httpMode: 'POST',
-                            url: 'http://188.235.130.37:9111/jenkins-api/test-results',
-                            requestBody: updatedResultsJson,
-                            contentType: 'APPLICATION_JSON'
             }
         }
 

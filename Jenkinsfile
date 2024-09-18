@@ -8,10 +8,10 @@ pipeline {
 
     parameters {
         string(name: 'TEST_IDS', defaultValue: '', description: 'Comma-separated list of test IDs to run')
-        string(name: 'USER_ID', defaultValue: '111', description: 'User id')
-        string(name: 'TEST_PLAN_ID', defaultValue: '222', description: 'Test plan id')
-        string(name: 'TEST_RUN_ID', defaultValue: '333', description: 'Test run uuid')
-        string(name: 'PROJECT_ID', defaultValue: '1', description: 'Project id')
+        string(name: 'USER_EMAIL', defaultValue: 'example@mail.com', description: 'User id')
+        string(name: 'TEST_PLAN_ID', defaultValue: '0', description: 'Test plan id')
+        string(name: 'TEST_RUN_ID', defaultValue: '0', description: 'Test run uuid')
+        string(name: 'PROJECT_ID', defaultValue: '0', description: 'Project id')
     }
 
     environment {
@@ -20,7 +20,7 @@ pipeline {
         GITHUB_REPO_URL = 'https://github.com/YarOzers/selenide-tests'
         GIT_CREDENTIALS_ID = 'jenkins-git-token'
         SELENOID_URL = 'http://188.235.130.37:4444/wd/hub'
-        USER_ID = "${params.USER_ID}"
+        USER_EMAIL = "${params.USER_EMAIL}"
         TEST_PLAN_ID = "${params.TEST_PLAN_ID}"
         TEST_RUN_ID = "${params.TEST_RUN_ID}"
         PROJECT_ID = "${params.PROJECT_ID}"
@@ -104,7 +104,7 @@ pipeline {
                             AS_ID: content.labels?.find { it.name == 'AS_ID' }?.value ?: 'unknownASID',
                             status: content.status ?: 'unknownStatus',
                             finishTime: content.stop ?: 'unknownFinishTime',
-                            userId: env.USER_ID ?: 'unknownUserId',
+                            userEmail: env.USER_EMAIL ?: 'unknownUserId',
                             testPlanId: env.TEST_PLAN_ID ?: 'unknownTestPlanId',
                             testRunID: env.TEST_RUN_ID ?: 'unknownTestRunId',
                             projectId: env.PROJECT_ID ?: 'unknownProjectId',

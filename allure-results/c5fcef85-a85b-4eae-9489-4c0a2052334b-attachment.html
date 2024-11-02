@@ -1,0 +1,67 @@
+<html lang="ru"><head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="shortcut icon" type="image/x-icon" href="/efr/favicon.ico" id="favicon">
+    <link href="/efr/styles.css" rel="stylesheet"></head>
+    <body>
+        <div id="root" class="full-height"><div class="full-height"><div class="full-height"><div class="full-height"><div class="full-height"><div class="login-layout"><div class="login-layout-wrapper"><div class="login-layout-wrapper-header"><div class="login-logo"></div><div class="login-logo-text white">Единый фронт РСХБ</div></div><div class="login-layout-fields"><div class="form field-columns-1" data-id="login-form"><div><div class="auth-fields login-selector"><label class="auth-fields-label uppercase white">Домен</label><div class="section select-wrapper" data-id="directory" style="width: 315px;"><div class="Select has-value is-clearable is-searchable Select--single"><div class="Select-control"><span class="Select-multi-value-wrapper" id="react-select-2--value"><div class="Select-value"><span class="Select-value-label" role="option" aria-selected="true" id="react-select-2--value-item">GO</span></div><div class="Select-input" style="display: inline-block;"><input aria-activedescendant="react-select-2--value" aria-expanded="false" aria-haspopup="false" aria-owns="" role="combobox" value="" style="box-sizing: content-box; width: 5px;"><div style="position: absolute; top: 0px; left: 0px; visibility: hidden; height: 0px; overflow: scroll; white-space: pre; font-size: 16px; font-family: &quot;Open Sans&quot;; font-weight: 400; font-style: normal; letter-spacing: normal; text-transform: none;"></div></div></span><span aria-label="Clear value" class="Select-clear-zone" title="Clear value"><span class="Select-clear">×</span></span><span class="Select-arrow-zone"><div class="select-arrow"></div></span></div></div></div></div><div class="auth-fields"><label class="auth-fields-label uppercase white">Имя пользователя</label><input class="input" type="text" data-id="field-login" value=""></div><div class="auth-fields"><label class="auth-fields-label uppercase white">Пароль</label><input class="input" type="password" data-id="field-password" autocomplete="new-password" value=""></div></div><div class="form-buttons"><button class="buttons button-primary" data-id="button-save"><span class="buttons-text">Войти</span></button></div></div></div></div></div></div></div></div></div></div>
+    <script type="text/javascript" src="/efr/js/app-bundle.63a37150.js"></script>
+    <script type="text/javascript">
+        var isAllowTimeDepositCashWithdrawal = true;
+        var restClientSettings = {
+                protocol: 'https',
+                host: window.location.hostname,
+                port: 443,
+            prefix: '/efrapi',
+            timeout: 240000
+        };
+
+        function getPlugins() {
+            try {
+                var result = [];
+                if (!navigator.plugins){
+                    return
+                };
+                for(var i = 0; i < navigator.plugins.length; i++){
+                    result[i]= {
+                        name: navigator.plugins[i].name,
+                        version: navigator.plugins[i].version,
+                        description: navigator.plugins[i].description,
+                        filename: navigator.plugins[i].filename,
+                    }
+                }
+                return result;
+            }catch (e) {
+                console.log("Ошибка получения информации о плагинах",e);
+            }
+        }
+
+        var loggingSettings = {
+            //Максимальный размер журнала взаимодействия, отсылаемый при ошибках на сервер
+            maxInteractionLogSize: 5,
+            //endpoint для отсылки ошибок презентации. Если не задан - логирование ошибок отлючено.
+            errorEndpoint: restClientSettings.protocol + '://' + restClientSettings.host + ':' + restClientSettings.port + restClientSettings.prefix + '/logging/v1/error',
+            //дполнительная информация, отсылаемая на сервер
+            additionalInfo: {
+                deviceInfo: {
+                    userAgent: navigator.userAgent,
+                    plugins: getPlugins()
+                }
+            }
+        };
+
+        var bpmProcessInfoSettings = {
+            //количесво повторений запроса информации о процессе, если он без задач и находится в состояниии WAITING_ASYNC
+            repeatCount: 120,
+            //задержка между повторениями запроса информации о процессе, если он без задач и находится в состояниии WAITING_ASYNC.
+            repeatDaley: 1000
+        };
+
+        var configuration = {
+            restClient:restClientSettings,
+            logging:loggingSettings,
+            bpmProcessInfo: bpmProcessInfoSettings
+        };
+        DevApp.render(document.getElementById('root'), configuration);
+    </script>
+</body></html>
